@@ -1,0 +1,12 @@
+{
+  "name": "Level 3 - split switch",
+  "grid": [
+    "##########",
+    "##########",
+    "#########G"
+  ],
+  "start": [0, 0],
+  "switches": [
+    {"pos": [0, 3], "type": "split", "split_to": [[2, 5], [2, 7]]}
+  ]
+}
