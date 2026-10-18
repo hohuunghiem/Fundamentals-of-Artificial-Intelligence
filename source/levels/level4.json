@@ -1,0 +1,15 @@
+﻿{
+  "name": "Level 4",
+  "board": [
+    "#####....",
+    "##h##BB##",
+    "#####BB#G"
+  ],
+  "start": {"row": 0, "col": 0},
+  "bridges": [
+    {"cells": [[1,5],[1,6],[2,5],[2,6]], "initially_open": false}
+  ],
+  "switches": [
+    {"row": 1, "col": 2, "bridge_ids": [0], "action": "open"}
+  ]
+}

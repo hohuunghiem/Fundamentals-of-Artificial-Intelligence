@@ -1,0 +1,7 @@
+﻿{
+  "name": "Level 13",
+  "board": ["#####.......", "##h##BBB....", "#####BBB####", ".....#######", "..........#G"],
+  "start": {"row": 0, "col": 0},
+  "bridges": [{"cells": [[1,5],[1,6],[1,7],[2,5],[2,6],[2,7]], "initially_open": false}],
+  "switches": [{"row": 1, "col": 2, "bridge_ids": [0], "action": "open"}]
+}
