@@ -19,4 +19,4 @@ class SolveResult:
     @property
     def solution_length(self) -> int:
         """Trả về số nước đi trong lời giải; bằng 0 nếu danh sách rỗng."""
-        pass
+        return len(self.moves)

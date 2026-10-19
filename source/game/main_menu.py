@@ -2,8 +2,11 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from ursina import Entity,camera,destroy,application,window
+from pathlib import Path
+from ursina import Entity,camera,destroy,application,window,load_texture,color
 from gui.theme import BG,ACCENT,GOLD,MUTED,panel,label,button
+
+ASSETS_DIRECTORY = Path(__file__).resolve().parents[1] / "assets"
 
 
 class MainMenuScreen(Entity):
@@ -13,6 +16,16 @@ class MainMenuScreen(Entity):
         super().__init__(parent=camera.ui)
 
         window.color = BG
+
+        # Ảnh nền phủ toàn màn hình, để ở phía sau nội dung menu.
+        self.background = Entity(
+            parent=self,
+            model="quad",
+            texture=load_texture("background.png", folder=ASSETS_DIRECTORY),
+            position=(0, 0, 1),
+            scale=(window.aspect_ratio * 2, 2),
+            color=color.rgb32(180, 180, 200),
+        )
 
         panel(
             self,

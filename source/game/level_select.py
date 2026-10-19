@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from ursina import Entity,camera,window,destroy
+from ursina import Entity,camera,window,destroy,load_texture,color
 
 from pathlib import Path
 from gui.theme import BG,ACCENT,GOLD,MUTED,panel,label,button,ERROR,PANEL
 
 LEVELS_DIRECTORY = Path(__file__).resolve().parents[1] / "levels"
+ASSETS_DIRECTORY = Path(__file__).resolve().parents[1] / "assets"
 
 
 class LevelSelectScreen(Entity):
@@ -37,15 +38,14 @@ class LevelSelectScreen(Entity):
         """Tạo nền và khung chứa các nút."""
         window.color = BG
 
-        # Nền phủ màn hình, nằm phía sau các thành phần khác.
-        self.background = panel(
+        # Ảnh nền phủ màn hình, nằm phía sau các thành phần khác.
+        self.background = Entity(
             parent=self,
-            x=0,
-            y=0,
-            width=4,
-            height=2,
-            tint=BG,
-            z=1,
+            model="quad",
+            texture=load_texture("menuSelect.png", folder=ASSETS_DIRECTORY),
+            position=(0, 0, 1),
+            scale=(window.aspect_ratio * 2, 2),
+            color=color.rgb32(180, 180, 200),
         )
 
         # Khung chứa lưới 15 nút.
