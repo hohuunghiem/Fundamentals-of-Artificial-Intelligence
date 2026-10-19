@@ -22,48 +22,69 @@ class ReplayController:
 
     def __init__(
         self,
-        game: GameController,
-        moves: list[Move],
-        step_delay: float = 0.4,
+        game,
+        moves,
+        step_delay: float = .38,
     ) -> None:
         self.game = game
-        self.moves = list(moves)  # Sao chép danh sách để tránh làm đổi dữ liệu gốc.
+        self.moves = list(moves)
+
         self.step_delay = step_delay
 
-        self._current_step: int = 0
-        self.is_playing: bool = False
+        self._current_step = 0
+        self._wait = 0.0
+
+        self.is_playing = False
 
     def start(self) -> None:
-        """Bắt đầu replay từ bước đầu tiên."""
+        """Bắt đầu phát lại từ nước đi đầu tiên."""
 
-        if not self.moves:
+        self._current_step = 0
+        self._wait = 0.0
+
+        self.is_playing = bool(self.moves)
+
+    def update(self, dt: float) -> None:
+        """Được GameController gọi mỗi frame."""
+
+        if not self.is_playing:
             return
 
-        self.is_playing = True
-        self._current_step = 0
-        self.game.is_busy = True
+        if self.game.is_busy:
+            return
 
-        # Bắt đầu phát lại chuỗi nước đi.
+        if self.game.has_won:
+            self.stop()
+            return
+
+        self._wait -= dt
+
+        if self._wait > 0:
+            return
+
         self._play_next_step()
 
     def _play_next_step(self) -> None:
-        """Thực hiện bước tiếp theo trong chuỗi replay."""
+        """Thực hiện nước đi tiếp theo khi Game đã sẵn sàng."""
+
+        if not self.is_playing:
+            return
 
         if self._current_step >= len(self.moves):
-            # Đã phát lại hết lời giải.
-            self.is_playing = False
-            self.game.is_busy = False
+            self.stop()
             return
 
         move = self.moves[self._current_step]
-        self.game._execute_move(move, allow_when_busy=True)
+
+        self.game.execute_move(move)
+
         self._current_step += 1
 
-        # Lên lịch thực hiện nước đi tiếp theo.
-        invoke(self._play_next_step, delay=self.step_delay)
+        self._wait = max(
+            0.0,
+            self.step_delay - self.game.MOVE_DURATION,
+        )
 
     def stop(self) -> None:
-        """Hủy phát lại; các lệnh gọi đã lên lịch sẽ không thực hiện nước đi."""
+        """Ngừng phát các nước đi tiếp theo."""
         self.is_playing = False
-        self._current_step = len(self.moves)
-        self.game.is_busy = False

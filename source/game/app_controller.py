@@ -5,8 +5,10 @@ from pathlib import Path
 from ursina import Entity, destroy
 
 from game.game import GameController
-from game.level_select import LevelSelectScreen
+from game.level_select import LevelSelectScreen, LEVELS_DIRECTORY
 from game.main_menu import MainMenuScreen
+
+from core.level_loader import load_level
 
 
 class AppController(Entity):
@@ -56,17 +58,33 @@ class AppController(Entity):
         )
 
     def start_level(self, level_number: int) -> None:
+
         self._clear_current_screen()
 
-        level_path = Path(f"levels/level{level_number}.json")
-        if not level_path.exists():
+        level_path = (
+            LEVELS_DIRECTORY / f"level{level_number}.json"
+        )
+        try:
+            level = load_level(level_path)
+        except Exception as error:
             print(
-                f"Level file does not exist: {level_path}"
+                f"[LEVEL ERROR] {level_path.name}: {error}"
             )
-            self.show_level_select()
+
+            if isinstance(
+                self.current_screen,
+                LevelSelectScreen,
+            ):
+                self.current_screen.show_error(
+                    f"Cannot load level {level_number}. "
+                    "Check the terminal."
+                )
+
             return
 
+        self._clear_current_screen()
+
         self.current_screen = GameController(
-            level_path=level_path,
+            level=level,
             on_back=self.show_level_select,
         )

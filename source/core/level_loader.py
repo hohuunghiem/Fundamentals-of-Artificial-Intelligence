@@ -72,7 +72,7 @@ def load_level(file_path: str | Path) -> Level:
         raise FileNotFoundError(f"Level file not found: {path}")
 
     try:
-        with path.open("r", encoding="utf-8") as file:
+        with path.open("r", encoding="utf-8-sig") as file:
             data = json.load(file)
     except json.JSONDecodeError as error:
         raise ValueError(
