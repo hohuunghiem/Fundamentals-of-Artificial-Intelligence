@@ -1,5 +1,7 @@
 # Bloxorz Solver (CSC14003 - Project 1)
-
+## Requirements
+    Python 3.13 (Won't work with 3.14 or higher)
+    If have both 3.13 and 3.14: use "py -3.13" instead
 ## Run
     pip install -r requirements.txt     # only needed for the pygame GUI
     python main.py                      # asks: tkinter or pygame
