@@ -2,7 +2,6 @@
 from heapq import heappop, heappush
 from itertools import count
 from math import ceil
-from typing import Tuple
 
 from core.enums import Orientation
 from core.level import Level
@@ -12,14 +11,8 @@ from core.transition import get_valid_moves, is_goal_state
 from algorithms.common import SearchResult, reconstruct_path, result_dict
 
 
-def _calculate_heuristic(goal_pos: Tuple[int, int], state: GameState) -> int:
-    """Ước lượng số bước tối thiểu còn lại đến đích.
-    
-    Tính admissible:
-    - Mỗi bước di chuyển thay đổi tọa độ nhiều nhất 2 ô. Do đó ceil(min_distance / 2) 
-      là cận dưới hợp lệ của số bước di chuyển điểm.
-    - Nếu khối gỗ chưa đứng, cần ít nhất 1 thao tác di chuyển để đưa về trạng thái STANDING.
-    """
+def _calc_h(goal_pos: tuple[int, int], state: GameState) -> int:
+    """Hàm phụ tính toán heuristic để tránh việc gọi level.board.find_goal() liên tục."""
     goal_row, goal_col = goal_pos
     positions = state.occupied_cells()
     
@@ -30,20 +23,36 @@ def _calculate_heuristic(goal_pos: Tuple[int, int], state: GameState) -> int:
 
     h = ceil(min_dist / 2)
     
-    # Nếu chưa đứng thẳng hoặc đang bị tách thì không thể thắng ngay lập tức
+    # Đảm bảo tính admissible: Nếu chưa đứng thẳng hoặc đang tách, cần ít nhất 1 bước
     if (state.is_split or state.block.orientation != Orientation.STANDING) and h == 0:
         h = 1
 
     return h
 
 
+def _heuristic(level: Level, state: GameState) -> int:
+    """Ước lượng số bước còn lại từ trạng thái hiện tại đến ô đích.
+
+    Heuristic nên rẻ để tính và không vượt quá chi phí thật còn lại nếu cần
+    đảm bảo A* tìm được lời giải tối ưu. Nên xét tư thế block và cả hai cube
+    khi trạng thái đang bị tách.
+    """
+    
+    return _calc_h(level.board.find_goal(), state)
+
+
 def astar_search(level: Level) -> SearchResult:
-    """Tìm lời giải bằng thuật toán A* với hàng đợi ưu tiên f = g + h."""
+    """Tìm lời giải bằng hàng đợi ưu tiên theo ``f = g + h``.
+
+    ``g`` là chi phí từ đầu đến trạng thái hiện tại; ``h`` là kết quả của
+    _heuristic. Cần bỏ qua mục hàng đợi cũ nếu đã có đường đi rẻ hơn đến
+    trạng thái đó, đồng thời lưu trạng thái cha để dựng lại danh sách nước đi.
+    """
     start = level.initial_state
-    goal_pos = level.board.find_goal()  # Tìm goal 1 lần duy nhất để tối ưu thời gian
+    goal_pos = level.board.find_goal()  # Tìm goal 1 lần duy nhất trước khi duyệt đồ thị
     
     counter = count()
-    start_h = _calculate_heuristic(goal_pos, start)
+    start_h = _calc_h(goal_pos, start)
     frontier = [(start_h, next(counter), 0, start)]
     
     best_cost = {start: 0}
@@ -55,7 +64,7 @@ def astar_search(level: Level) -> SearchResult:
     while frontier:
         _, _, cost, current = heappop(frontier)
 
-        # Bỏ qua trạng thái cũ nếu đã có đường đi rẻ hơn
+        # Lazy deletion: Bỏ qua trạng thái cũ nếu đã tìm được đường đi ngắn hơn
         if cost > best_cost.get(current, float("inf")):
             continue
 
@@ -74,7 +83,9 @@ def astar_search(level: Level) -> SearchResult:
             if new_cost < best_cost.get(next_state, float("inf")):
                 best_cost[next_state] = new_cost
                 parents[next_state] = (current, move)
-                priority = new_cost + _calculate_heuristic(goal_pos, next_state)
+                
+                # Sử dụng hàm phụ với goal_pos đã lưu sẵn để tối ưu tốc độ
+                priority = new_cost + _calc_h(goal_pos, next_state)
                 heappush(
                     frontier,
                     (priority, next(counter), new_cost, next_state),
