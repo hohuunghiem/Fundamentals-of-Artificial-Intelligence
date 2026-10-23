@@ -209,7 +209,7 @@ class GameController(Entity):
                 width=.18,
                 tint=ACCENT,
             )
-            if name == "BFS":
+            if name in ("BFS", "DFS"):
                 solver_button.color = BG
                 solver_button.highlight_color = BG
                 solver_button.pressed_color = ACCENT
