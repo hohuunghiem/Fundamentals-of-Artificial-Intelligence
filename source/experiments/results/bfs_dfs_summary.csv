@@ -1,0 +1,11 @@
+﻿group,algorithm,levels,avg_length,avg_expanded,avg_time_ms,avg_memory_kb
+Cơ bản,BFS,3,20.7,95.3,4.094,36.8
+Cơ bản,DFS,3,37.0,71.3,3.036,29.9
+Fragile,BFS,2,35.5,149.5,7.398,45.4
+Fragile,DFS,2,54.5,128.0,5.952,47.9
+Switch,BFS,7,46.7,1791.9,113.704,837.6
+Switch,DFS,7,261.4,334.9,19.787,229.9
+Kết hợp,BFS,5,81.0,431.2,25.538,159.4
+Kết hợp,DFS,5,134.0,676.8,40.241,293.4
+Tất cả,BFS,17,50.9,899.1,55.923,403.6
+Tất cả,DFS,17,160.0,364.6,21.219,191.9
