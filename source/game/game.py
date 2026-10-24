@@ -209,14 +209,7 @@ class GameController(Entity):
                 width=.18,
                 tint=ACCENT,
             )
-            if name in ("BFS", "DFS"):
-                solver_button.color = BG
-                solver_button.highlight_color = BG
-                solver_button.pressed_color = ACCENT
-            else:
-                solver_button.disabled = True
-                solver_button.color = BG
-                solver_button.text_entity.color = MUTED
+           
 
         button(
             parent=self.ui,
