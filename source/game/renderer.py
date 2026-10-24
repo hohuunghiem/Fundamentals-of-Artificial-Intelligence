@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from ursina import Entity,Vec3,color,destroy,invoke
+from ursina.shaders import lit_with_shadows_shader
 
 from core.board import Board
 from core.enums import Move, Orientation, TileType
@@ -9,6 +10,8 @@ from core.state import GameState
 
 from game.animation import BlockAnimator
 from gui.theme import GOLD, ACCENT
+
+from math import sin, pi
 
 
 class BoardRenderer:
@@ -26,6 +29,19 @@ class BoardRenderer:
 
         self.tiles = {}
         self.collapsed_tiles = set()
+
+        # Các phần viền của ô đích.
+        self.goal_edges = []
+        self.goal_glows = []
+
+        # Ký hiệu và màu gốc của công tắc.
+        self.switch_markers = {}
+        self.switch_base_colors = {}
+
+        # Thời gian còn lại của từng hiệu ứng lóe sáng.
+        self.switch_flashes = {}
+
+        self.effect_time = 0.0
 
         self._generation = 0
         self._destroyed = False
@@ -106,6 +122,7 @@ class BoardRenderer:
             parent=self.root,
             model="cube",
             texture="white_cube",
+            shader=lit_with_shadows_shader,
             position=(col, 0, -row),
             scale=(
                 .96,
@@ -127,46 +144,196 @@ class BoardRenderer:
         tile_type: TileType,
         draw_index: int,
     ) -> None:
-        """Tạo ký hiệu nổi trên công tắc."""
+        """Tạo ký hiệu công tắc và lưu để điều khiển hiệu ứng."""
 
         tile = self.tiles[row, col]
+        position = (row, col)
 
         marker_color = color.rgb32(240, 244, 255)
 
+        # Lưu màu thật của ô, kể cả khi đã đổi bảng màu.
+        self.switch_base_colors[position] = (
+            round(tile.color.r * 255),
+            round(tile.color.g * 255),
+            round(tile.color.b * 255),
+        )
+
+        markers = []
+
         if tile_type == TileType.SOFT_SWITCH:
-            # Một thanh ngang.
-            Entity(
+            # Dấu trừ.
+            marker = Entity(
                 parent=tile,
                 model="cube",
                 position=(0, .57, 0),
                 scale=(.42, .12, .12),
                 color=marker_color,
+                unlit=True,
             )
 
+            markers.append(marker)
+
         elif tile_type == TileType.HEAVY_SWITCH:
-            # Hai thanh tạo dấu cộng.
+            # Dấu cộng.
             for marker_scale in (
                 (.42, .12, .12),
                 (.12, .12, .42),
             ):
-                Entity(
+                marker = Entity(
                     parent=tile,
                     model="cube",
                     position=(0, .57, 0),
                     scale=marker_scale,
                     color=marker_color,
+                    unlit=True,
                 )
 
+                markers.append(marker)
+
         elif tile_type == TileType.SPLIT_SWITCH:
-            # Hai ô nhỏ tượng trưng cho hai cube.
+            # Hai hình nhỏ tượng trưng cho hai cube.
             for offset in (-.16, .16):
-                Entity(
+                marker = Entity(
                     parent=tile,
                     model="cube",
                     position=(offset, .57, 0),
                     scale=(.20, .12, .25),
                     color=marker_color,
+                    unlit=True,
                 )
+
+                markers.append(marker)
+
+        self.switch_markers[position] = markers
+
+    def flash_switch(self, row: int, col: int) -> None:
+        """Bật sáng ngay khi công tắc được kích hoạt."""
+
+        if self._destroyed:
+            return
+
+        position = (row, col)
+
+        if position not in self.switch_markers:
+            return
+
+        # Tổng thời gian hiệu ứng.
+        self.switch_flashes[position] = .8
+
+        # Đặt màu ngay, không chờ frame tiếp theo.
+        tile = self.tiles.get(position)
+
+        if tile is not None:
+            tile.color = color.rgb32(255, 245, 190)
+
+        for marker in self.switch_markers[position]:
+            marker.color = color.rgb32(255, 165, 35)
+
+
+    def update_effects(self, dt: float) -> None:
+        """Cập nhật ánh sáng ô đích và công tắc."""
+
+        if self._destroyed:
+            return
+
+        dt = max(0.0, min(dt, .05))
+
+        self.effect_time += dt
+
+        # ----- Ô đích sáng theo nhịp -----
+        pulse = (
+            sin(self.effect_time * pi) + 1
+        ) / 2
+
+        goal_color = color.rgb32(
+            int(65 + 55 * pulse),
+            int(180 + 65 * pulse),
+            int(140 + 65 * pulse),
+        )
+
+        for edge in self.goal_edges:
+            edge.color = goal_color
+
+        glow_alpha = int(35 + 95 * pulse)
+
+        for glow in self.goal_glows:
+            glow.color = color.rgba32(
+                92,
+                232,
+                182,
+                glow_alpha,
+            )
+
+        # ----- Công tắc lóe sáng -----
+        for position, remaining in list(
+            self.switch_flashes.items()
+        ):
+            remaining = max(0.0, remaining - dt)
+
+            # Giữ sáng hoàn toàn trong 0.15 giây đầu.
+            # Sau đó giảm dần trong 0.65 giây.
+            strength = min(1.0, remaining / .65)
+
+            base_color = self.switch_base_colors[position]
+            flash_color = (255, 245, 190)
+
+            tile = self.tiles.get(position)
+
+            if tile is not None:
+                tile.color = color.rgb32(
+                    *[
+                        round(
+                            base + (bright - base) * strength
+                        )
+                        for base, bright in zip(
+                            base_color,
+                            flash_color,
+                        )
+                    ]
+                )
+
+            # Ký hiệu trắng chuyển sang vàng cam.
+            marker_base = (240, 244, 255)
+            marker_flash = (255, 165, 35)
+
+            current_marker_color = color.rgb32(
+                *[
+                    round(
+                        base + (bright - base) * strength
+                    )
+                    for base, bright in zip(
+                        marker_base,
+                        marker_flash,
+                    )
+                ]
+            )
+
+            for marker in self.switch_markers[position]:
+                marker.color = current_marker_color
+
+            if remaining <= 0:
+                del self.switch_flashes[position]
+            else:
+                self.switch_flashes[position] = remaining
+
+    def reset_effects(self) -> None:
+        """Khôi phục màu công tắc khi chơi lại."""
+
+        if self._destroyed:
+            return
+
+        self.switch_flashes.clear()
+        self.effect_time = 0.0
+
+        for position, rgb in self.switch_base_colors.items():
+            tile = self.tiles.get(position)
+
+            if tile is not None:
+                tile.color = color.rgb32(*rgb)
+
+        for markers in self.switch_markers.values():
+            for marker in markers:
+                marker.color = color.rgb32(240, 244, 255)
 
     def _create_goal(
         self,
@@ -174,8 +341,9 @@ class BoardRenderer:
         col: int,
         draw_index: int,
     ) -> None:
-        """Tạo lỗ đích bằng bốn cạnh bao quanh."""
+        """Tạo viền đích và lớp sáng trang trí xung quanh."""
 
+        # Viền chính, giữ nguyên kích thước lỗ đích.
         edges = [
             (-.44, 0, .12, 1),
             (.44, 0, .12, 1),
@@ -184,7 +352,7 @@ class BoardRenderer:
         ]
 
         for dx, dz, width, depth in edges:
-            Entity(
+            edge = Entity(
                 parent=self.root,
                 model="cube",
                 position=(
@@ -198,7 +366,42 @@ class BoardRenderer:
                     depth,
                 ),
                 color=color.rgb32(92, 232, 182),
+                unlit=True,
             )
+
+            self.goal_edges.append(edge)
+
+        # Viền ngoài mỏng và bán trong suốt.
+        # Nằm hơi cao hơn mặt sàn để tránh nhấp nháy bề mặt.
+        glow_edges = [
+            (-.50, 0, .05, 1.05),
+            (.50, 0, .05, 1.05),
+            (0, -.50, .95, .05),
+            (0, .50, .95, .05),
+        ]
+
+        for dx, dz, width, depth in glow_edges:
+            glow = Entity(
+                parent=self.root,
+                model="cube",
+                position=(
+                    col + dx,
+                    self.TILE_HEIGHT / 2 + .015,
+                    -row + dz,
+                ),
+                scale=(
+                    width,
+                    .012,
+                    depth,
+                ),
+                color=color.rgba32(92, 232, 182, 80),
+                unlit=True,
+            )
+
+            # Viền trang trí không tạo bóng.
+            glow.hide(0b0001)
+
+            self.goal_glows.append(glow)
 
     def animate_fragile_collapse(
         self,
@@ -310,6 +513,7 @@ class BlockRenderer:
         """Tạo 12 cạnh viền cho một khối hộp."""
 
         outline = Entity(parent=parent)
+        outline.hide(0b0001)
 
         thickness = .012
         edge_position = .501
@@ -368,6 +572,7 @@ class BlockRenderer:
         self.block = Entity(
             model="cube",
             texture="white_cube",
+            shader=lit_with_shadows_shader,
             color=GOLD,
         )
 
@@ -379,6 +584,7 @@ class BlockRenderer:
             cube = Entity(
                 model="cube",
                 texture="white_cube",
+                shader=lit_with_shadows_shader,
                 scale=.94,
                 enabled=False,
             )
