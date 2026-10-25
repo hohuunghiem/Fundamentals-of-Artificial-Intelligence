@@ -1,8 +1,9 @@
-"""Chạy thực nghiệm BFS và DFS trên toàn bộ level, xuất bảng CSV và biểu đồ.
+"""Chạy thực nghiệm các thuật toán tìm kiếm trên toàn bộ level, xuất CSV và biểu đồ.
 
 Chạy từ thư mục ``source``:
 
     python -m experiments.bfs_dfs_experiment
+    python -m experiments.bfs_dfs_experiment --algos all --out experiments/results_all
     python -m experiments.bfs_dfs_experiment --runs 10 --out experiments/results
 
 Thời gian được đo riêng (không bật tracemalloc) và lấy trung vị qua nhiều lần
@@ -18,8 +19,10 @@ from collections import Counter
 from pathlib import Path
 from time import perf_counter
 
+from algorithms.astar import astar_search
 from algorithms.bfs import bfs_search
 from algorithms.dfs import dfs_search
+from algorithms.ucs import ucs_search
 from algorithms.profiler import run_with_profiling
 from core.level_loader import load_level
 from core.transition import apply_move, is_goal_state
@@ -27,20 +30,30 @@ from core.transition import apply_move, is_goal_state
 SOURCE_DIR = Path(__file__).resolve().parents[1]
 LEVELS_DIR = SOURCE_DIR / "levels"
 
-ALGORITHMS = {
+ALL_ALGORITHMS = {
     "BFS": bfs_search,
     "DFS": dfs_search,
+    "UCS": ucs_search,
+    "A*": astar_search,
 }
+
+ALGORITHMS = {name: ALL_ALGORITHMS[name] for name in ("BFS", "DFS")}
 
 COLORS = {
     "BFS": "#2a78d6",
     "DFS": "#eb6834",
+    "UCS": "#1baf7a",
+    "A*": "#eda100",
 }
 
 GROUP_ORDER = ["Cơ bản", "Fragile", "Switch", "Kết hợp"]
 
 FRAGILE_CHARS = {"f"}
 SWITCH_CHARS = {"s", "h", "p", "S", "b", "B"}
+
+
+def _prefix() -> str:
+    return "_".join(name.lower().replace("*", "star") for name in ALGORITHMS)
 
 
 def level_number(path: Path) -> int:
@@ -117,7 +130,7 @@ def write_csv(rows: list[dict], out_dir: Path) -> None:
         "level", "group", "algorithm", "success", "valid",
         "length", "expanded", "generated", "time_ms", "memory_kb",
     ]
-    with open(out_dir / "bfs_dfs_results.csv", "w", newline="", encoding="utf-8-sig") as f:
+    with open(out_dir / f"{_prefix()}_results.csv", "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=fields)
         writer.writeheader()
         for row in rows:
@@ -128,7 +141,7 @@ def write_csv(rows: list[dict], out_dir: Path) -> None:
             })
 
     summary_fields = ["group", "algorithm", "levels", "avg_length", "avg_expanded", "avg_time_ms", "avg_memory_kb"]
-    with open(out_dir / "bfs_dfs_summary.csv", "w", newline="", encoding="utf-8-sig") as f:
+    with open(out_dir / f"{_prefix()}_summary.csv", "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.DictWriter(f, fieldnames=summary_fields)
         writer.writeheader()
         for group in GROUP_ORDER + ["Tất cả"]:
@@ -184,14 +197,14 @@ def plot(rows: list[dict], out_dir: Path) -> None:
         ("memory_kb", "Bộ nhớ đỉnh (KB)", "memory.png", True),
     ]
 
-    width = 0.38
+    width = 0.8 / len(ALGORITHMS)
     x = list(range(len(levels)))
     labels = [f"L{lv}" for lv in levels]
 
     for key, title, filename, log in metrics:
         fig, ax = plt.subplots(figsize=(11, 4.2), dpi=160)
         for i, name in enumerate(ALGORITHMS):
-            offset = (i - 0.5) * width
+            offset = (i - (len(ALGORITHMS) - 1) / 2) * width
             values = [by_key[(lv, name)][key] for lv in levels]
             ax.bar(
                 [p + offset for p in x], values, width=width - 0.04,
@@ -202,7 +215,7 @@ def plot(rows: list[dict], out_dir: Path) -> None:
             ax.yaxis.set_major_formatter(plain)
         ax.set_xticks(x, labels)
         ax.set_xlim(-0.6, len(levels) - 0.4)
-        ax.set_title(f"{title}: BFS và DFS trên từng level", loc="left", fontsize=12, color="#1f1f1d")
+        ax.set_title(f"{title}: {', '.join(ALGORITHMS)} trên từng level", loc="left", fontsize=12, color="#1f1f1d")
         ax.set_ylabel(title + (" (thang log)" if log else ""))
         ax.legend(frameon=False, loc="upper left", ncols=2)
 
@@ -247,7 +260,15 @@ def main() -> None:
     parser.add_argument("--runs", type=int, default=5, help="số lần đo thời gian mỗi cặp (lấy trung vị)")
     parser.add_argument("--out", type=Path, default=SOURCE_DIR / "experiments" / "results")
     parser.add_argument("--no-plot", action="store_true", help="chỉ xuất CSV, không vẽ biểu đồ")
+    parser.add_argument(
+        "--algos", default="BFS,DFS",
+        help="danh sách thuật toán, cách nhau bởi dấu phẩy (BFS,DFS,UCS,A*), hoặc 'all'",
+    )
     args = parser.parse_args()
+
+    names = list(ALL_ALGORITHMS) if args.algos == "all" else [a.strip() for a in args.algos.split(",")]
+    ALGORITHMS.clear()
+    ALGORITHMS.update({name: ALL_ALGORITHMS[name] for name in names})
 
     args.out.mkdir(parents=True, exist_ok=True)
     rows = run_all(args.runs)

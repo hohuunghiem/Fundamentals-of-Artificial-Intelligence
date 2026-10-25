@@ -1,0 +1,69 @@
+﻿level,group,algorithm,success,valid,length,expanded,generated,time_ms,memory_kb
+1,Cơ bản,BFS,True,True,8,81,217,6.675,34.4
+1,Cơ bản,DFS,True,True,28,36,95,3.471,18.0
+1,Cơ bản,UCS,True,True,8,81,217,7.560,30.1
+1,Cơ bản,A*,True,True,8,39,109,4.347,18.9
+2,Cơ bản,BFS,True,True,19,98,240,8.639,37.7
+2,Cơ bản,DFS,True,True,32,100,251,4.473,39.1
+2,Cơ bản,UCS,True,True,19,98,240,4.859,33.2
+2,Cơ bản,A*,True,True,19,84,209,4.883,30.6
+3,Cơ bản,BFS,True,True,35,107,230,4.626,38.3
+3,Cơ bản,DFS,True,True,51,78,168,4.441,32.7
+3,Cơ bản,UCS,True,True,35,107,230,4.840,33.7
+3,Cơ bản,A*,True,True,35,106,229,5.139,33.9
+4,Switch,BFS,True,True,32,384,883,20.869,132.3
+4,Switch,DFS,True,True,110,179,420,9.258,64.9
+4,Switch,UCS,True,True,32,384,883,18.625,115.3
+4,Switch,A*,True,True,32,367,848,19.888,115.2
+5,Switch,BFS,True,True,44,177,383,7.924,57.3
+5,Switch,DFS,True,True,69,153,338,8.621,55.6
+5,Switch,UCS,True,True,44,177,383,8.683,56.6
+5,Switch,A*,True,True,44,176,380,10.107,56.4
+6,Switch,BFS,True,True,11,824,3316,51.977,275.7
+6,Switch,DFS,True,True,149,161,607,10.446,128.3
+6,Switch,UCS,True,True,11,824,3316,53.420,277.6
+6,Switch,A*,True,True,11,629,2621,43.535,257.4
+7,Switch,BFS,True,True,22,283,769,13.642,81.6
+7,Switch,DFS,True,True,66,87,248,5.556,42.4
+7,Switch,UCS,True,True,22,283,769,14.615,80.8
+7,Switch,A*,True,True,22,236,645,13.502,71.0
+8,Kết hợp,BFS,True,True,30,123,269,5.602,41.7
+8,Kết hợp,DFS,True,True,35,101,225,4.479,37.6
+8,Kết hợp,UCS,True,True,30,123,269,5.261,37.1
+8,Kết hợp,A*,True,True,30,97,214,4.681,32.4
+9,Kết hợp,BFS,True,True,45,1578,5799,87.615,612.1
+9,Kết hợp,DFS,True,True,305,2936,10965,169.377,1318.9
+9,Kết hợp,UCS,True,True,45,1578,5799,92.419,545.4
+9,Kết hợp,A*,True,True,45,1437,5250,85.554,525.6
+10,Switch,BFS,True,True,58,10671,38440,596.242,5246.1
+10,Switch,DFS,True,True,1276,1602,5601,94.899,1260.0
+10,Switch,UCS,True,True,58,10671,38440,561.103,5260.8
+10,Switch,A*,True,True,58,9421,33893,509.248,4058.3
+11,Switch,BFS,True,True,78,83,163,3.335,29.8
+11,Switch,DFS,True,True,78,79,156,3.425,28.5
+11,Switch,UCS,True,True,78,83,163,3.525,23.1
+11,Switch,A*,True,True,78,83,163,3.767,23.1
+12,Switch,BFS,True,True,82,121,238,5.872,40.1
+12,Switch,DFS,True,True,82,83,164,3.286,29.7
+12,Switch,UCS,True,True,82,121,238,5.288,35.4
+12,Switch,A*,True,True,82,121,238,5.426,35.4
+13,Kết hợp,BFS,True,True,94,101,199,4.113,36.0
+13,Kết hợp,DFS,True,True,94,95,188,3.792,34.2
+13,Kết hợp,UCS,True,True,94,101,199,4.509,31.5
+13,Kết hợp,A*,True,True,94,101,199,7.414,31.5
+14,Kết hợp,BFS,True,True,110,129,254,5.668,41.4
+14,Kết hợp,DFS,True,True,110,125,247,4.563,39.9
+14,Kết hợp,UCS,True,True,110,129,254,5.415,36.8
+14,Kết hợp,A*,True,True,110,129,254,5.586,36.8
+15,Kết hợp,BFS,True,True,126,225,446,8.904,65.9
+15,Kết hợp,DFS,True,True,126,127,252,4.964,40.9
+15,Kết hợp,UCS,True,True,126,225,446,10.219,65.0
+15,Kết hợp,A*,True,True,126,213,422,10.521,62.7
+16,Fragile,BFS,True,True,39,55,109,2.639,18.5
+16,Fragile,DFS,True,True,39,77,161,3.345,29.5
+16,Fragile,UCS,True,True,39,55,109,2.395,18.0
+16,Fragile,A*,True,True,39,53,106,2.255,17.8
+17,Fragile,BFS,True,True,32,244,674,11.499,72.2
+17,Fragile,DFS,True,True,70,179,505,8.072,66.2
+17,Fragile,UCS,True,True,32,244,674,13.001,71.1
+17,Fragile,A*,True,True,32,240,665,13.227,72.6
