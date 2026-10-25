@@ -102,9 +102,20 @@ def measure(name, search_fn, level, runs: int) -> dict:
     }
 
 
+def warm_up(paths) -> None:
+    """Chạy thử mọi thuật toán trên mọi level một lần (không đo) để CPU và
+    bộ nhớ đệm ổn định, tránh các màn đầu bị đo chậm hơn thực tế."""
+    for path in paths:
+        level = load_level(path)
+        for fn in ALGORITHMS.values():
+            fn(level)
+
+
 def run_all(runs: int) -> list[dict]:
     rows = []
     paths = sorted(LEVELS_DIR.glob("level*.json"), key=level_number)
+    print("Đang chạy khởi động (warm-up)...")
+    warm_up(paths)
     for path in paths:
         level = load_level(path)
         group = classify(path)
@@ -186,7 +197,7 @@ def plot(rows: list[dict], out_dir: Path) -> None:
     from matplotlib.ticker import FuncFormatter
 
     groups = {r["level"]: r["group"] for r in rows}
-    levels = sorted(groups, key=lambda lv: (GROUP_ORDER.index(groups[lv]), lv))
+    levels = sorted(groups)
     plain = FuncFormatter(lambda v, _: f"{v:g}")
     by_key = {(r["level"], r["algorithm"]): r for r in rows}
 
@@ -199,7 +210,7 @@ def plot(rows: list[dict], out_dir: Path) -> None:
 
     width = 0.8 / len(ALGORITHMS)
     x = list(range(len(levels)))
-    labels = [f"L{lv}" for lv in levels]
+    labels = [f"L{lv}\n{groups[lv]}" for lv in levels]
 
     for key, title, filename, log in metrics:
         fig, ax = plt.subplots(figsize=(11, 4.2), dpi=160)
@@ -213,23 +224,12 @@ def plot(rows: list[dict], out_dir: Path) -> None:
         if log:
             ax.set_yscale("log")
             ax.yaxis.set_major_formatter(plain)
-        ax.set_xticks(x, labels)
+        ax.set_xticks(x, labels, fontsize=8)
         ax.set_xlim(-0.6, len(levels) - 0.4)
         ax.set_title(f"{title}: {', '.join(ALGORITHMS)} trên từng level", loc="left", fontsize=12, color="#1f1f1d")
         ax.set_ylabel(title + (" (thang log)" if log else ""))
         ax.legend(frameon=False, loc="upper left", ncols=2)
 
-        for g in GROUP_ORDER:
-            idx = [i for i, lv in enumerate(levels) if groups[lv] == g]
-            if not idx:
-                continue
-            if idx[0] != 0:
-                ax.axvline(idx[0] - 0.5, color="#c3c2b7", linewidth=0.8, linestyle=":")
-            ax.annotate(
-                g, xy=((idx[0] + idx[-1]) / 2, 0), xycoords=("data", "axes fraction"),
-                xytext=(0, -30), textcoords="offset points",
-                ha="center", va="top", fontsize=10, color="#6b6b66",
-            )
         fig.tight_layout()
         fig.savefig(out_dir / filename)
         plt.close(fig)
