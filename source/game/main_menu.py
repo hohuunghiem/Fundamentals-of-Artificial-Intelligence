@@ -55,7 +55,7 @@ class MainMenuScreen(Entity):
 
         label(
             self,
-            "17 puzzles. Four search algorithms.\n"
+            "15 puzzles. Four search algorithms.\n"
             "One block. Find your way home.",
             -.53,
             .04,

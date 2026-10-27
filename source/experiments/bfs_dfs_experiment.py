@@ -15,6 +15,7 @@ import argparse
 import csv
 import json
 import statistics
+import sys
 from collections import Counter
 from pathlib import Path
 from time import perf_counter
@@ -256,6 +257,13 @@ def plot(rows: list[dict], out_dir: Path) -> None:
 
 
 def main() -> None:
+    # Windows consoles may default to a legacy encoding that cannot print
+    # Vietnamese help text. Use UTF-8 for the CLI when stream reconfiguration
+    # is available (for example, on Python 3.7+).
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--runs", type=int, default=5, help="số lần đo thời gian mỗi cặp (lấy trung vị)")
     parser.add_argument("--out", type=Path, default=SOURCE_DIR / "experiments" / "results")

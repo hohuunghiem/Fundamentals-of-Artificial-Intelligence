@@ -14,7 +14,7 @@ ASSETS_DIRECTORY = Path(__file__).resolve().parents[1] / "assets"
 class LevelSelectScreen(Entity):
     """Màn hình chọn màn chơi từ 1 đến 15."""
 
-    LEVEL_NUMBERS = tuple(range(1, 18))
+    LEVEL_NUMBERS = tuple(range(1, 16))
 
     def __init__(
         self,
@@ -82,7 +82,7 @@ class LevelSelectScreen(Entity):
 
         self.subtitle = label(
             parent=self,
-            text="01 - 17 / Practice, explore, compare",
+            text="01 - 15 / Practice, explore, compare",
             x=-.61,
             y=.29,
             size=.9,

@@ -57,14 +57,60 @@ Nếu lệnh tạo môi trường ảo báo không tìm thấy Python 3.13, hãy
 - **RESTART**: chơi lại màn
 - **RESULTS**: xem thống kê kết quả
 
-Hiện tại BFS đã hoạt động. Các nút DFS, UCS và A* sẽ được mở khi những thuật toán đó hoàn thiện.
+Cả BFS, DFS, UCS và A* đều đã được cài đặt và có thể chạy trong game.
+
+## Chạy thực nghiệm các thuật toán
+
+Mở terminal tại thư mục `source` và kích hoạt môi trường ảo đã tạo ở phần cài đặt. Script mặc định chạy BFS và DFS trên cả 15 level. Để tạo cả biểu đồ, cài Matplotlib rồi chạy:
+
+```bash
+python -m pip install matplotlib
+python -m experiments.bfs_dfs_experiment
+```
+
+Kết quả mặc định được lưu trong `experiments/results/`, gồm CSV và biểu đồ PNG. Để chạy cả bốn thuật toán BFS, DFS, UCS và A* rồi lưu riêng vào `experiments/results_all/`, dùng:
+
+```bash
+python -m experiments.bfs_dfs_experiment --algos all --out experiments/results_all
+```
+
+Hai thư mục kết quả khác nhau ở các thuật toán được chạy:
+
+- `experiments/results/`: BFS và DFS.
+- `experiments/results_all/`: BFS, DFS, UCS và A*.
+
+Một số tùy chọn khác:
+
+```bash
+# Đo mỗi cặp thuật toán/level 10 lần (mặc định là 5 lần)
+python -m experiments.bfs_dfs_experiment --runs 10
+
+# Chỉ xuất CSV, không vẽ biểu đồ (không cần Matplotlib)
+python -m experiments.bfs_dfs_experiment --no-plot
+
+# Chọn thuật toán và thư mục kết quả tùy ý
+python -m experiments.bfs_dfs_experiment --algos BFS,UCS --out experiments/results_bfs_ucs
+```
+
+Các tên thuật toán hợp lệ là `BFS`, `DFS`, `UCS` và `A*`; phân cách nhiều tên bằng dấu phẩy. Khi không chỉ định `--out`, script ghi vào `experiments/results/`.
 
 ## Cấu trúc project
 
-- `main.py`: điểm khởi chạy ứng dụng Ursina
-- `core/`: bàn chơi, khối, trạng thái, luật di chuyển và bộ đọc level JSON
-- `game/`: menu, điều khiển trò chơi, dựng hình, hoạt ảnh và phát lại nước đi
-- `algorithms/`: các thuật toán BFS, DFS, UCS, A* và bộ đo hiệu năng
-- `gui/`: giao diện dùng chung và bảng thống kê
-- `levels/`: dữ liệu 15 màn chơi dạng JSON
-- `assets/`: ảnh nền menu và màn chọn level
+```text
+source/
+├── main.py                         # Điểm khởi chạy game
+├── requirements.txt                # Thư viện cần cài
+├── README.md                       # Hướng dẫn project
+├── algorithms/                     # BFS, DFS, UCS, A* và mã dùng chung
+├── assets/                          # Ảnh nền menu và màn chọn level
+├── core/                            # Mô hình bàn chơi, trạng thái và luật di chuyển
+├── experiments/
+│   ├── bfs_dfs_experiment.py        # Chạy benchmark, xuất CSV và biểu đồ
+│   ├── results/                     # Kết quả BFS/DFS
+│   └── results_all/                 # Kết quả BFS/DFS/UCS/A*
+├── game/                            # Menu, vòng chơi, hiển thị và phát lại nước đi
+├── gui/                             # Chủ đề giao diện và bảng thống kê
+└── levels/                          # Dữ liệu 15 màn chơi dạng JSON
+```
+
+`experiments/results/` và `experiments/results_all/` chứa các kết quả đã được lưu sẵn. Chạy lại script thực nghiệm có thể tạo hoặc ghi đè các file kết quả trong thư mục được chọn qua `--out`.
