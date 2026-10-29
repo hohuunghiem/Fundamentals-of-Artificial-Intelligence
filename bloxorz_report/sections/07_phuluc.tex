@@ -1,0 +1,26 @@
+\section{Hướng dẫn chạy chương trình và tái lập thực nghiệm}
+Mã nguồn hướng tới Python 3.13 theo tệp README. Tại thư mục \texttt{source}, tạo và kích hoạt môi trường ảo, cài các thư viện trong \texttt{requirements.txt}, sau đó chạy trò chơi:
+\begin{lstlisting}[language=bash,numbers=none]
+python -m pip install -r requirements.txt
+python main.py
+\end{lstlisting}
+Phím mũi tên hoặc WASD dùng để di chuyển; Space đổi cube đang điều khiển; R khởi động lại màn; Esc trở về danh sách màn. Các nút BFS, DFS, UCS và A* gọi bộ giải từ trạng thái đầu; RESULTS mở bảng thống kê.
+
+Để chạy thực nghiệm bốn thuật toán với năm lượt đo thời gian cho mỗi màn, dùng script có kiểm tra chi phí:
+\begin{lstlisting}[language=bash,numbers=none]
+python -m experiments.search_experiment --algos all \
+  --runs 5 --out experiments/report_results
+\end{lstlisting}
+Có thể thêm \texttt{--no-plot} để chỉ xuất số liệu. Thư mục kết quả chứa CSV chi tiết theo màn, CSV trung bình theo nhóm và các biểu đồ. Tham số \texttt{--out} nên trỏ đến một thư mục mới khi cần giữ lại kết quả trước đó.
+
+Khi tái lập, giữ nguyên các tệp \texttt{level1.json} đến \texttt{level15.json}, thứ tự sinh hành động và quy tắc chi phí. Ghi lại CPU, RAM, hệ điều hành, phiên bản Python, số lượt đo và phiên bản mã nguồn để so sánh các lần chạy. Thời gian có thể thay đổi giữa các môi trường; số bước, chi phí và bộ đếm nút cần được đối chiếu riêng với CSV.
+
+\clearpage
+\section{Liên kết mã nguồn và video demo đồ án}
+
+\noindent\textbf{Mã nguồn GitHub:} \url{https://github.com/hohuunghiem/Fundamentals-of-Artificial-Intelligence}
+
+\noindent Kho lưu trữ này chứa mã nguồn, các thư mục dữ liệu và kết quả thực nghiệm của đồ án Bloxorz Solver.
+
+\vspace{5mm}
+\noindent\textbf{Video demo:} \url{https://youtu.be/bJiol6gotSw}

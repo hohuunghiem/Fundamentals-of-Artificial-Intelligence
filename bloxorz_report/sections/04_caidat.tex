@@ -1,0 +1,28 @@
+\section{Cài đặt và giao diện}
+\subsection{Kiến trúc chương trình}
+\begin{table}[htbp]\centering\small
+\caption{Các thành phần chính của mã nguồn}
+\begin{tabularx}{\linewidth}{|p{.31\linewidth}|Y|}
+\hline Thành phần & Trách nhiệm\\\hline
+\texttt{core/} & Bản đồ, khối, trạng thái, đọc JSON và luật chuyển trạng thái.\\\hline
+\texttt{algorithms/} & BFS, DFS, UCS, A*, kiểu kết quả và đo tài nguyên.\\\hline
+\texttt{game/} & Chơi tay, chọn màn, hoạt ảnh và phát lại lời giải.\\\hline
+\texttt{gui/} & Chủ đề giao diện và bảng kết quả.\\\hline
+\texttt{levels/} & Dữ liệu màn chơi dùng chung.\\\hline
+\texttt{experiments/} & Chạy bộ test, kiểm tra lời giải, xuất CSV và biểu đồ.\\\hline
+\texttt{main.py} & Khởi tạo ứng dụng Ursina.\\\hline
+\end{tabularx}
+\end{table}
+Tách mô hình khỏi GUI cho phép chạy thực nghiệm mà không mở cửa sổ game. Solver nhận một \texttt{Level} và trả kết quả; profiler bổ sung thời gian và bộ nhớ; GUI hoặc script thực nghiệm đọc cùng kiểu \texttt{SolveResult}. Trường \texttt{solution\_length} tính từ danh sách hành động, còn \texttt{solution\_cost} lưu tổng trọng số đã tính.
+
+\subsection{Luồng sử dụng}
+Người dùng chọn màn, di chuyển bằng phím mũi tên hoặc WASD; Space đổi cube chủ động khi tách. Nút Restart đưa trạng thái về đầu màn. Khi chọn solver, phiên bản giao diện đang xét khởi động lại màn rồi tìm lời giải từ trạng thái đầu, không giải tiếp từ vị trí đang chơi. Sau khi có kết quả, hệ thống kiểm tra lại đường đi trước khi phát lại.
+
+Bảng Results hiển thị Method, Steps, Cost, Time, Memory, Expanded và Generated. Steps là số hành động; Cost là tổng phí $1$--$2$--$4$; bộ nhớ do profiler trả về theo MiB. Khi không có lời giải, giao diện hiển thị No path và không gán chi phí bằng $0$.
+
+\subsection{Thực thi nền và giới hạn của STOP}
+Giao diện chạy solver trong luồng nền để tránh khóa vòng cập nhật hình ảnh. Kết quả được gửi về để xử lý ở phía giao diện. STOP dừng replay hoặc vô hiệu hóa kết quả đang chờ bằng mã thế hệ, nhưng chưa hủy vòng tìm kiếm đang chạy. Khóa tìm kiếm có thể vẫn được giữ đến khi solver kết thúc. Do đó, STOP chưa hỗ trợ hủy tức thời phép tìm kiếm; cơ chế hủy hợp tác là một hướng hoàn thiện.
+
+\hinhanh[0.78\linewidth]{gui_game.png}{Giao diện chơi Bloxorz của phiên bản nộp.}
+\hinhanh[0.78\linewidth]{gui_results.png}{Bảng kết quả với hai cột Steps và Cost tách biệt.}
+

@@ -1,0 +1,126 @@
+
+\section{Thiết kế các thuật toán tìm kiếm}
+\subsection{Thành phần dùng chung}
+Bốn thuật toán lấy successor từ \texttt{get\_valid\_moves} và kiểm tra đích bằng \texttt{is\_goal\_state}. Bảng \texttt{parents} lưu cặp trạng thái trước và hành động để dựng lại đường đi. Việc dùng chung mô hình chuyển trạng thái bảo đảm các solver giải cùng một bài toán. Kiểm tra replay xác nhận đường đi hợp lệ theo mô hình đã cài đặt; để kiểm chứng tính đúng đắn của luật game, cần thêm các trường hợp kiểm thử có kết quả mong đợi độc lập.
+
+Kết quả gồm \texttt{success}, \texttt{moves}, \texttt{expanded\_nodes}, \texttt{generated\_nodes} và \texttt{solution\_cost}. Khi không có lời giải, \texttt{solution\_cost=None}; không dùng $0$ vì $0$ biểu thị lời giải không cần hành động khi trạng thái đầu đã là đích.
+
+\subsection{Breadth-First Search (BFS)}
+BFS dùng hàng đợi FIFO, mở rộng các trạng thái theo số hành động từ điểm đầu tăng dần. Cài đặt sử dụng danh sách và một chỉ số đầu hàng đợi; mỗi trạng thái được đánh dấu khi thêm vào hàng đợi để không sinh lại nhiều lần. Khi lấy được đích ra khỏi hàng đợi, lần ngược \texttt{parents} rồi đảo danh sách hành động.
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python,caption={Mã giả BFS theo cài đặt của nhóm}]
+frontier = [start]; head = 0
+visited = {start}; parents = {start: None}
+while head < len(frontier):
+    s = frontier[head]; head += 1
+    if goal(s):
+        return reconstruct_and_evaluate(parents, s)
+    for action, t in successors(s):
+        if t not in visited:
+            visited.add(t)
+            parents[t] = (s, action)
+            frontier.append(t)
+return failure
+\end{lstlisting}
+\end{minipage}
+BFS tìm lời giải ít hành động nhất trên đồ thị hữu hạn này. Tuy nhiên, khi chi phí là $1$--$2$--$4$, ít hành động nhất không đồng nghĩa chi phí nhỏ nhất. Chi phí chỉ được cộng dọc đường đi trong lúc dựng lại lời giải, không ảnh hưởng đến việc chọn trạng thái để mở rộng. Thứ tự successor có thể thay đổi đường đi được chọn trong số các lời giải cùng độ dài và số nút phải mở rộng trước khi gặp đích.
+
+\subsection{Depth-First Search (DFS)}
+DFS dùng stack LIFO. Cài đặt đánh dấu trạng thái khi đưa vào stack và lấy trạng thái vừa thêm gần nhất để xử lý trước. Nếu thứ tự sinh successor là Up, Down, Left, Right thì stack sẽ ưu tiên successor được thêm sau cùng trong số các trạng thái mới. Với trạng thái tách, hành động Switch cũng nằm trong thứ tự sinh.
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python,caption={Mã giả DFS theo cài đặt của nhóm}]
+stack = [start]
+visited = {start}; parents = {start: None}
+while stack:
+    s = stack.pop()
+    if goal(s):
+        return reconstruct_and_evaluate(parents, s)
+    for action, t in successors(s):
+        if t not in visited:
+            visited.add(t)
+            parents[t] = (s, action)
+            stack.append(t)
+return failure
+\end{lstlisting}
+\end{minipage}
+Trên không gian trạng thái hữu hạn, tập visited ngăn chu trình và thuật toán kết thúc nếu được phép chạy đến hết. DFS có thể tìm nhanh một đường đi khi thứ tự duyệt thuận lợi, nhưng không bảo đảm ít bước nhất hoặc rẻ nhất. Tương tự BFS, phần tính Cost chỉ đánh giá đường đi đã tìm thấy. Chi phí lời giải không tham gia vào việc lựa chọn trạng thái mở rộng; thứ tự duyệt được quyết định bởi ngăn xếp LIFO.
+
+\subsection{Uniform-Cost Search (UCS)}
+UCS dùng min-heap với khóa $g(s)$, là tổng chi phí từ điểm đầu tới $s$. Mỗi mục heap chứa $(g,\text{thứ tự},s)$; biến đếm thứ tự tránh việc Python phải so sánh trực tiếp hai đối tượng trạng thái khi bằng chi phí.
+
+\texttt{best\_cost[s]} lưu chi phí nhỏ nhất đã biết. Nếu tìm được đường rẻ hơn, thuật toán cập nhật chi phí, cập nhật cha và thêm mục heap mới. Mục cũ không bị xóa ngay; khi lấy ra, nếu chi phí không còn bằng giá trị tốt nhất thì bỏ qua. Điều kiện dừng được xét khi lấy đích ra khỏi heap, không phải ngay khi lần đầu sinh ra đích.
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python,caption={Mã giả UCS với cập nhật đường đi rẻ hơn}]
+heap = [(0, next(counter), start)]
+best_cost = {start: 0}
+parents = {start: None}
+while heap:
+    g, _, s = heappop(heap)
+    if g != best_cost.get(s):
+        continue
+    if goal(s):
+        return reconstruct(parents, s), g
+    for action, t in successors(s):
+        new_g = g + step_cost(s, action, t)
+        if new_g < best_cost.get(t, infinity):
+            best_cost[t] = new_g
+            parents[t] = (s, action)
+            heappush(heap, (new_g, next(counter), t))
+return failure
+\end{lstlisting}
+\end{minipage}
+Vì mọi cạnh hợp lệ đều có chi phí dương, UCS bảo đảm chi phí lời giải tối ưu khi tìm kiếm hoàn tất đúng. UCS sử dụng chi phí $1$--$2$--$4$ đã định nghĩa ở phần mô hình hóa. Một đường dài hơn BFS vẫn có thể rẻ hơn nếu tránh fragile hoặc giảm số lần đổi tư thế. Do đó bảng đánh giá phải có cả Length và Cost để phản ánh đúng mục tiêu.
+
+\subsection{A* và thiết kế heuristic}
+A* dùng độ ưu tiên $f(s)=g(s)+h(s)$. Phần $g$ sử dụng đúng hàm chi phí của UCS. Cấu trúc heap chứa $(f,\text{thứ tự},g,s)$; kiểm tra mục cũ dựa trên $g$ và \texttt{best\_cost}. Thuật toán cho phép xét lại trạng thái khi tìm thấy $g$ nhỏ hơn, không dùng một tập đóng vĩnh viễn cấm cập nhật.
+
+\noindent\begin{minipage}{\linewidth}
+\begin{lstlisting}[language=Python,caption={Mã giả A* với hàm chi phí dùng cùng quy tắc UCS}]
+heap = [(h(start), next(counter), 0, start)]
+best_cost = {start: 0}
+parents = {start: None}
+while heap:
+    _, _, g, s = heappop(heap)
+    if g != best_cost.get(s):
+        continue
+    if goal(s):
+        return reconstruct(parents, s), g
+    for action, t in successors(s):
+        new_g = g + step_cost(s, action, t)
+        if new_g < best_cost.get(t, infinity):
+            best_cost[t] = new_g
+            parents[t] = (s, action)
+            heappush(heap, (new_g + h(t),
+                           next(counter), new_g, t))
+return failure
+\end{lstlisting}
+\end{minipage}
+
+\subsubsection{Màn không có split switch}
+Gọi $q$ là ô đích và $d(s)=\min_{p\in\operatorname{Occ}(s)}\lVert p-q\rVert_1$. Heuristic được chọn là:
+\[
+h(s)=\begin{cases}
+\lceil d(s)/2\rceil,&o(s)=\text{STANDING},\\
+\max\{1,\lceil d(s)/2\rceil\},&o(s)\ne\text{STANDING}.
+\end{cases}
+\]
+Khoảng cách lấy từ ô đang bị chiếm gần đích nhất, thay vì chỉ lấy ô neo. Phần tối thiểu $1$ ngăn heuristic bằng $0$ khi khối nằm ngang qua đích nhưng chưa thắng.
+
+\textbf{Tính admissible.} Không có teleport, một lần lăn làm khoảng cách nhỏ nhất giảm tối đa $2$. Muốn về khoảng cách $0$ cần ít nhất $\lceil d/2\rceil$ hành động. Nếu chưa đứng thì cần ít nhất một hành động để có thể thắng. Mỗi hành động tốn ít nhất $1$, nên cận dưới số hành động này cũng là cận dưới chi phí thật còn lại. Các chướng ngại và công tắc có thể làm đường thực tế dài hơn, không làm cận dưới tăng quá mức.
+
+\textbf{Tính consistent.} Trên mỗi cạnh không teleport, $d(s)\le d(s')+2$, suy ra $\lceil d(s)/2\rceil\le1+\lceil d(s')/2\rceil$. Vì $c(s,a,s')\ge1$, thành phần khoảng cách thỏa $h(s)\le c+h(s')$. Thành phần chỉ báo ``chưa đứng'' nhận giá trị $0$ hoặc $1$ cũng thỏa bất đẳng thức này. Lấy cực đại hai cận dưới nhất quán vẫn giữ tính nhất quán, với $h=0$ tại đích.
+
+\subsubsection{Màn có split switch}
+Teleport có thể làm khoảng cách giảm nhiều hơn $2$ chỉ trong một hành động, nên lập luận hình học phía trên không áp dụng. Phiên bản hiện tại kiểm tra toàn bản đồ và đặt $h(s)=0$ cho \emph{mọi trạng thái} của màn có split, kể cả trước lúc khối tách. Khi đó heuristic admissible và consistent do chi phí không âm; A* trở thành UCS trên màn này.
+
+Đây là lựa chọn ưu tiên tính đúng đắn và khả năng giải thích. Không kỳ vọng A* giảm số nút so với UCS ở các màn split. Có thể cải thiện heuristic bằng một bài toán nới lỏng có chứa cạnh teleport, với điều kiện cận dưới vẫn được bảo đảm.
+
+\subsection{Độ phức tạp và quy ước đo}
+Gọi $V$ là số trạng thái tới được và $E$ là số cạnh hợp lệ giữa chúng. Nếu coi sinh successor và thao tác băm có chi phí cố định, BFS/DFS có thời gian $O(V+E)$ và bộ nhớ $O(V)$. Trong cài đặt DFS này, visited và parents lưu trạng thái đã phát hiện nên không thể mặc định bộ nhớ chỉ tỷ lệ độ sâu.
+
+Với heap nhị phân và mục cũ được giữ đến khi lấy ra, UCS có thời gian điển hình $O((V+E)\log V)$ trên đồ thị có bậc bị chặn; A* với heuristic nhất quán có cùng bậc xấu nhất. Heap có thể chứa nhiều mục cho một trạng thái, còn bảng chi phí và bảng cha lưu tối đa theo số trạng thái. Mỗi trạng thái có tối đa năm hành động, nhưng chi phí xử lý cụ thể còn phụ thuộc số cầu và công tắc được tra cứu.
+
+Bộ đếm Expanded tăng khi lấy một mục hợp lệ khỏi frontier, trước goal test, nên tính cả nút đích. Generated bắt đầu bằng $1$ và tăng với mỗi successor hợp lệ trước khi lọc trạng thái lặp; đây không phải số trạng thái phân biệt. Bốn thuật toán dùng cùng quy ước đếm.

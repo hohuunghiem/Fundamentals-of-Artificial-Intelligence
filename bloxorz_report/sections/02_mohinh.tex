@@ -1,0 +1,70 @@
+
+\section{Mô hình hóa bài toán tìm kiếm}
+\subsection{Bản đồ và trạng thái}
+Bản đồ là lưới hữu hạn với kích thước $H\times W$. Thông tin tĩnh gồm loại ô, vị trí đích, nhóm cầu, liên kết công tắc và các vị trí teleport. Thông tin động được lưu trong \texttt{GameState}, có thể biểu diễn:
+\[
+s=(b,\boldsymbol{\beta},C,a).
+\]
+Trong đó $b=(r,c,o)$ mô tả khối và tư thế $o$; $\boldsymbol{\beta}$ là bộ giá trị đóng/mở của các nhóm cầu; $C$ là vị trí hai cube khi tách, rỗng khi chưa tách; $a$ là cube đang điều khiển hoặc giá trị rỗng khi khối đã ghép.
+
+\begin{table}[htbp]\centering
+\caption{Các tư thế và ô bị chiếm}
+\begin{tabularx}{\linewidth}{|l|Y|}
+\hline Tư thế & Các ô bị chiếm\\\hline
+\texttt{STANDING} & $(r,c)$\\\hline
+\texttt{HORIZONTAL} & $(r,c)$ và $(r,c+1)$\\\hline
+\texttt{VERTICAL} & $(r,c)$ và $(r+1,c)$\\\hline
+\texttt{CUBE} & Khi tách, dùng hai tọa độ trong $C$; $b$ theo cube chủ động.\\\hline
+\end{tabularx}
+\end{table}
+Hai trạng thái chỉ bằng nhau khi các thành phần động tương ứng bằng nhau. Đặc biệt, cùng vị trí khối nhưng khác cấu hình cầu là hai trạng thái khác nhau. Kiểu dữ liệu bất biến và hàm băm cho phép dùng trạng thái làm phần tử của \texttt{visited} hoặc khóa của \texttt{parents}, \texttt{best\_cost}.
+
+\subsection{Hành động và chuyển trạng thái}
+Khối chưa tách có bốn hành động \texttt{UP}, \texttt{DOWN}, \texttt{LEFT}, \texttt{RIGHT}. Khi tách, mỗi hướng di chuyển cube chủ động một ô; \texttt{SWITCH} đổi cube đang điều khiển mà không thay đổi vị trí. Trong cách đếm hiện tại, \texttt{SWITCH} cũng là một hành động.
+
+\begin{table}[htbp]\centering\small
+\caption{Bảng chuyển tư thế của khối lớn; tọa độ là ô neo của tư thế mới}
+\begin{tabular}{|l|l|l|l|l|}
+\hline Tư thế & Up & Down & Left & Right\\\hline
+Đứng & $(r-2,c,V)$ & $(r+1,c,V)$ & $(r,c-2,H)$ & $(r,c+1,H)$\\\hline
+Nằm ngang & $(r-1,c,H)$ & $(r+1,c,H)$ & $(r,c-1,S)$ & $(r,c+2,S)$\\\hline
+Nằm dọc & $(r-1,c,S)$ & $(r+2,c,S)$ & $(r,c-1,V)$ & $(r,c+1,V)$\\\hline
+\end{tabular}
+\end{table}
+Ký hiệu $S,H,V$ lần lượt là đứng, nằm ngang và nằm dọc. Hàm \texttt{calculate\_moved\_block} tính hình học; \texttt{apply\_move} kiểm tra mặt đỡ, tác động công tắc và trạng thái sau di chuyển. Nước đi trả về \texttt{None} bị loại khỏi tập successor. GUI dùng kết quả này để biểu diễn rơi; solver chỉ mở rộng các successor hợp lệ.
+
+\subsection{Các ô đặc biệt}
+\begin{table}[htbp]\centering\small
+\caption{Luật ô đặc biệt và ký hiệu JSON}
+\begin{tabularx}{\linewidth}{|l|p{.12\linewidth}|Y|}
+\hline Loại ô & Ký hiệu & Cơ chế\\\hline
+Fragile & \texttt{f} & Khối lớn được nằm lên nhưng không được đứng thẳng.\\\hline
+Bridge & \texttt{B/b} & Có mặt đỡ khi nhóm cầu mở, không có mặt đỡ khi đóng.\\\hline
+Soft switch & \texttt{s} & Kích hoạt khi khối hoặc cube đè lên.\\\hline
+Heavy switch & \texttt{h} & Chỉ kích hoạt khi khối lớn đứng thẳng.\\\hline
+Split switch & \texttt{p/S} & Khối lớn đứng lên thì tách và teleport theo cấu hình.\\\hline
+\end{tabularx}
+\end{table}
+Hành vi \texttt{toggle} đảo trạng thái cầu; \texttt{open} và \texttt{close} gán trạng thái cố định ở thời điểm kích hoạt. Một công tắc gán mở không có nghĩa cây cầu không thể bị công tắc khác đóng về sau. Với soft/heavy switch, cài đặt hiện tại so sánh tập công tắc đang được nhấn trước và sau hành động để không kích hoạt lặp khi vẫn đè liên tục.
+
+Khi một cube di chuyển đến ô kề cạnh cube còn lại, hai cube được ghép thành khối nằm ngang hoặc nằm dọc. Cube đơn có thể kích hoạt soft switch nhưng không thể kích hoạt heavy switch hoặc tự hoàn thành màn chơi.
+
+Trong phiên bản hiện tại, việc kiểm tra ghép khối chỉ được thực hiện sau thao tác di chuyển cube. Nếu hai cube được teleport tới hai ô kề cạnh ngay từ đầu, chúng vẫn ở trạng thái tách. Chúng chỉ ghép khi một thao tác di chuyển sau đó đưa hai cube về vị trí kề cạnh nhau.
+
+\subsection{Trạng thái đầu và điều kiện đích}
+Trạng thái đầu lấy từ JSON, gồm vị trí khối và cấu hình cầu ban đầu. Điều kiện đích là khối chưa tách, có tư thế \texttt{STANDING} và nằm đúng ô \texttt{GOAL}. Chỉ nằm ngang qua ô đích hoặc để một cube tại đích chưa thỏa điều kiện thắng.
+
+\subsection{Hàm chi phí thống nhất}
+Với cạnh hợp lệ $s\xrightarrow{a}s'$, nhóm chọn:
+\[
+c(s,a,s')=\begin{cases}
+4,&\text{nếu }\operatorname{Occ}(s')\text{ chứa ít nhất một ô fragile},\\
+2,&\text{nếu không chạm fragile và }o(s)\ne o(s'),\\
+1,&\text{các trường hợp còn lại.}
+\end{cases}
+\]
+Các mức phí không cộng dồn: vừa đổi tư thế vừa chạm fragile chỉ tốn $4$. Mô hình ưu tiên tránh fragile và hạn chế thay đổi tư thế; đây là trọng số thiết kế để đánh giá đường đi, không phải xác suất rơi hay mô hình năng lượng vật lý.
+
+Khi tách, $\operatorname{Occ}(s')$ gồm cả hai cube. Vì vậy một cube bất động đang trên fragile cũng làm hành động của cube còn lại có phí $4$; đổi điều khiển bằng Space cũng vậy. Nếu không chạm fragile, đổi điều khiển giữa hai cube giữ tư thế \texttt{CUBE} nên có phí $1$. Quy tắc này được áp dụng giống nhau cho cả bốn lời giải.
+
+Với đường đi $P$ có $k$ hành động, độ dài là $L(P)=k$ và chi phí là $C(P)=\sum_{i=0}^{k-1}c(s_i,a_i,s_{i+1})$. Từ đó $L(P)\le C(P)\le4L(P)$. BFS tối ưu $L$; UCS và A* tối ưu $C$; DFS không bảo đảm tối ưu hai đại lượng này.

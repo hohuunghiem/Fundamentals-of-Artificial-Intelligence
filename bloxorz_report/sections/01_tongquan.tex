@@ -1,0 +1,57 @@
+\section{Tổng quan và kế hoạch thực hiện}
+\subsection{Giới thiệu bài toán}
+Bloxorz là trò chơi điều khiển một khối hộp kích thước $1\times1\times2$ trên bàn ô vuông. Người chơi lăn khối theo bốn hướng để đưa khối đứng thẳng vào ô đích. Khó khăn nằm ở việc vị trí và tư thế của khối cùng quyết định nước đi hợp lệ: khi đứng, khối chiếm một ô; khi nằm, khối chiếm hai ô. Các ô dễ vỡ, công tắc, cầu và cơ chế tách khối làm trạng thái bài toán thay đổi theo lịch sử di chuyển.
+
+Đồ án xây dựng trò chơi có giao diện và bốn bộ giải BFS, DFS, UCS, A*. Mục tiêu không chỉ là tìm một lời giải mà còn so sánh chất lượng lời giải và tài nguyên tìm kiếm trên cùng bộ màn chơi, theo yêu cầu trong đề bài~\cite{de}.
+
+\subsection{Mục tiêu và phạm vi}
+Chương trình được viết bằng Python, sử dụng Ursina cho giao diện. Nhóm tự cài đặt các thuật toán tìm kiếm; các cấu trúc như danh sách, tập hợp, từ điển và hàng đợi ưu tiên chỉ đóng vai trò hỗ trợ. Màn chơi được mô tả bằng JSON để dùng chung giữa chơi tay, giải tự động và thực nghiệm.
+
+Phạm vi chức năng gồm: các phép lăn cơ bản; kiểm tra rơi và thắng; fragile, bridge, soft switch, heavy switch, split switch; điều khiển từng cube sau khi tách; phát lại lời giải; ghi nhận thời gian, bộ nhớ, số nút mở rộng, số hành động và tổng chi phí. Báo cáo phân biệt số hành động với chi phí, vì hai đại lượng này không tương đương khi sử dụng trọng số $1$--$2$--$4$.
+
+
+
+\subsection{Kế hoạch và phân công}
+
+Nhóm gồm năm thành viên, phối hợp xây dựng trò chơi,
+cài đặt bốn thuật toán tìm kiếm, thực hiện thực nghiệm,
+viết báo cáo và quay video minh họa. Quy trình thực hiện gồm xây dựng luật chơi, tích hợp bộ giải, đo thực nghiệm và tổng hợp kết quả.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Phân công nhiệm vụ và mức độ hoàn thành}
+\begin{tabularx}{\linewidth}{|p{3.8cm}|X|c|}
+\hline
+\textbf{Thành viên}
+& \textbf{Nhiệm vụ}
+& \textbf{Hoàn thành} \\\hline
+Huỳnh Thanh Huy \newline 24120323
+& Xây dựng trò chơi cùng Chu Bảo Minh;
+  cài đặt thuật toán BFS.
+& 100\% \\\hline
+Hồ Hữu Nghiêm \newline 24120390
+& Cài đặt thuật toán UCS;
+  viết phần mô tả các thuật toán trong báo cáo.
+& 100\% \\\hline
+Chu Bảo Minh \newline 24120379
+& Xây dựng trò chơi cùng Huỳnh Thanh Huy;
+  thực hiện video demo.
+& 100\% \\\hline
+Trần Thị Bích Hạnh \newline 24120304
+& Cài đặt thuật toán A*;
+  thực hiện và trình bày phần thực nghiệm
+  cùng Võ Trúc Quỳnh.
+& 100\% \\\hline
+Võ Trúc Quỳnh \newline 24120427
+& Cài đặt thuật toán DFS;
+  thực hiện và trình bày phần thực nghiệm
+  cùng Trần Thị Bích Hạnh.
+& 100\% \\\hline
+\end{tabularx}
+\end{table}
+
+Theo đánh giá của nhóm, mỗi thành viên hoàn thành
+100\% nhiệm vụ được phân công. Tỷ lệ này thể hiện
+mức độ hoàn thành nhiệm vụ của từng thành viên,
+không phải tỷ lệ đóng góp cộng lại của cả nhóm.

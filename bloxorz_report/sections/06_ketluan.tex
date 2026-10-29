@@ -1,0 +1,13 @@
+\clearpage
+\section{Kết luận và hướng phát triển}
+Đồ án xây dựng trò chơi Bloxorz bằng Python với giao diện Ursina và bốn thuật toán BFS, DFS, UCS, A*. Trạng thái tìm kiếm bao gồm vị trí, tư thế khối, cấu hình cầu, vị trí hai khối đơn và quyền điều khiển khi tách. Các thuật toán dùng chung luật chuyển trạng thái, nhờ đó kết quả được so sánh trên cùng bài toán.
+
+Trên bộ 15 màn, cả 60 kết quả đều có lời giải hợp lệ và chi phí khớp với phép tính lại dọc đường đi. BFS cho số hành động nhỏ nhất; UCS và A* có cùng chi phí trên tất cả các màn. Màn 1 thể hiện rõ khác biệt giữa hai mục tiêu: BFS đi 8 bước với chi phí 12, trong khi UCS và A* đi 9 bước với chi phí 11.
+
+DFS đạt thời gian trung bình thấp nhất, nhưng chất lượng lời giải không ổn định. Ở màn 10, lời giải DFS dài gấp 22 lần lời giải BFS. Vì vậy, DFS phù hợp để tìm nhanh một lời giải khi thứ tự duyệt thuận lợi, nhưng không phù hợp nếu cần bảo đảm số bước hoặc tổng chi phí nhỏ nhất.
+
+A* giảm số nút so với UCS ở một số màn không có split, rõ nhất là màn 1 với mức giảm khoảng 52.94\%. Trên các màn split 6, 9 và 10, heuristic bằng 0 nên chiến lược tìm kiếm tương đương UCS. Tổng hợp toàn bộ bộ test, A* chỉ giảm khoảng 0.61\% số nút mở rộng và có thời gian trung bình cao hơn UCS. Kết quả cho thấy lợi ích của A* phụ thuộc chất lượng heuristic và cấu trúc màn chơi.
+
+Giới hạn chính của chương trình là heuristic chưa khai thác được teleport, STOP chưa hủy ngay vòng tìm kiếm và thao tác ghép khối chỉ được xét sau khi di chuyển một cube. Bộ thực nghiệm chưa bao gồm màn vô nghiệm, chưa lưu số đo thời gian thô và thông tin phần cứng, nên chưa đủ để suy rộng kết luận về hiệu năng sang các môi trường khác.
+
+Hướng phát triển gồm bổ sung kiểm thử độc lập cho luật công tắc và tách ghép; tập trung hàm chi phí vào một mô-đun dùng chung; hỗ trợ tín hiệu hủy solver; xây dựng heuristic dựa trên bài toán nới lỏng có teleport. Bộ test cần được mở rộng bằng các màn có nhiều đường cạnh tranh về chi phí để đánh giá rõ hơn lợi ích của UCS và A*.

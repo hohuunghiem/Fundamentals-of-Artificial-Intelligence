@@ -1,0 +1,96 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{fontspec}
+\setmainfont{Latin Modern Roman}
+\setmonofont{DejaVu Sans Mono}[Scale=0.77]
+\usepackage[a4paper,left=27mm,right=22mm,top=23mm,bottom=23mm]{geometry}
+\usepackage{amsmath,amssymb,graphicx,booktabs,tabularx,array,longtable,float,enumitem,setspace,fancyhdr,titlesec,caption,listings,xcolor,hyperref}
+\usepackage{tikz}
+\definecolor{CoverBlue}{HTML}{0078B8}
+\setlength{\arrayrulewidth}{0.45pt}
+\setstretch{1.15}
+\setlength{\parskip}{3pt}
+\setlength{\parindent}{6mm}
+\setlength{\headheight}{15pt}
+\setlength{\emergencystretch}{3em}
+\setlist{nosep,topsep=4pt,leftmargin=1.7em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\hypersetup{hidelinks,pdftitle={Bloxorz Solver},pdfauthor={Huỳnh Thanh Huy; Hồ Hữu Nghiêm; Chu Bảo Minh; Trần Thị Bích Hạnh; Võ Trúc Quỳnh}}
+\fancyhf{}
+\fancyhead[L]{\small CSC14003}
+\fancyhead[R]{\small Bloxorz Solver}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\titleformat{\section}{\large\bfseries}{\thesection}{0.7em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\itshape}{\thesubsubsection}{0.7em}{}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{9pt}{4pt}
+\captionsetup{font=small,labelfont=bf,skip=5pt}
+\renewcommand{\contentsname}{Mục lục}
+\renewcommand{\tablename}{Bảng}
+\renewcommand{\figurename}{Hình}
+\renewcommand{\refname}{Tài liệu tham khảo}
+\lstset{basicstyle=\ttfamily\small,breaklines=true,columns=fullflexible,frame=single,rulecolor=\color{black!25},numbers=none,aboveskip=8pt,belowskip=8pt,showstringspaces=false}
+\renewcommand{\lstlistingname}{Mã giả}
+\newcommand{\hinhanh}[3][0.95\linewidth]{\begin{figure}[htbp]\centering\includegraphics[width=#1]{figures/#2}\caption{#3}\end{figure}}
+\setcounter{tocdepth}{2}
+\begin{document}
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+\draw[CoverBlue,line width=1.6pt] ([xshift=14mm,yshift=-14mm]current page.north west) rectangle ([xshift=-14mm,yshift=14mm]current page.south east);
+\draw[CoverBlue!65,line width=0.5pt] ([xshift=16mm,yshift=-16mm]current page.north west) rectangle ([xshift=-16mm,yshift=16mm]current page.south east);
+\end{tikzpicture}
+\centering
+{\bfseries ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH\par}
+{\bfseries TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN\par}
+{KHOA CÔNG NGHỆ THÔNG TIN\par}
+\vspace{18mm}
+\includegraphics[width=50mm]{figures/hcmus_logo.png}
+\vspace{13mm}
+
+{\large\bfseries BÁO CÁO ĐỒ ÁN 1\par}
+\vspace{6mm}
+{\Huge\bfseries BLOXORZ SOLVER\par}
+\vspace{8mm}
+{\large Nhập môn Trí tuệ nhân tạo\par}
+{Mã học phần CSC14003\par}
+\vspace{12mm}
+{\bfseries GIẢNG VIÊN HƯỚNG DẪN\par}
+GV. Nguyễn Thanh Tình\par
+\vspace{12mm}
+{\bfseries NHÓM THỰC HIỆN : 8\par}
+\vspace{5mm}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{ll}
+MSSV & Họ và tên\\
+24120323 & Huỳnh Thanh Huy\\
+24120390 & Hồ Hữu Nghiêm\\
+24120379 & Chu Bảo Minh\\
+24120304 & Trần Thị Bích Hạnh\\
+24120427 & Võ Trúc Quỳnh
+\end{tabular}
+\vfill
+Thành phố Hồ Chí Minh, ngày 30 tháng 11 năm 2026
+\end{titlepage}
+\pagestyle{fancy}
+\pagenumbering{arabic}
+{\small\setstretch{1.0}\setlength{\parskip}{0pt}\tableofcontents}
+\clearpage
+\input{sections/01_tongquan}
+\input{sections/02_mohinh}
+\input{sections/03_thuattoan}
+\input{sections/04_caidat}
+\input{sections/05_thucnghiem}
+\input{sections/06_ketluan}
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{Tài liệu tham khảo}
+\begin{thebibliography}{9}
+\bibitem{de} Khoa Công nghệ Thông tin, Trường Đại học Khoa học Tự nhiên, ĐHQG-HCM. \textit{CSC14003 Introduction to Artificial Intelligence, Project 1: Bloxorz Solver}. Đề bài học phần, 8 trang.
+\bibitem{code} Nhóm thực hiện. \textit{Mã nguồn Bloxorz Solver}. Các mô-đun \texttt{core}, \texttt{algorithms}, \texttt{game}, \texttt{gui}, \texttt{levels} và \texttt{experiments} trong gói mã nguồn kèm báo cáo.
+\bibitem{data} Nhóm thực hiện. \textit{Kết quả thực nghiệm BFS, DFS, UCS và A* trên 15 màn Bloxorz}. Hai tệp \texttt{bfs\_dfs\_ucs\_astar\_results.csv} và \texttt{bfs\_dfs\_ucs\_astar\_summary.csv}; 60 kết quả theo cặp màn và thuật toán.
+\bibitem{template} lenbui. \textit{Report template}. Mẫu LaTeX tham khảo để viết báo cáo. \url{https://github.com/lenbui/report-template}. Truy cập ngày 29/10/2026.
+\end{thebibliography}
+\appendix
+\input{sections/07_phuluc}
+\end{document}
