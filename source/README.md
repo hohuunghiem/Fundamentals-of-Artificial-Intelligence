@@ -64,7 +64,6 @@ Cả BFS, DFS, UCS và A* đều đã được cài đặt và có thể chạy 
 Mở terminal tại thư mục `source` và kích hoạt môi trường ảo đã tạo ở phần cài đặt. Script mặc định chạy BFS và DFS trên cả 15 level. Để tạo cả biểu đồ, cài Matplotlib rồi chạy:
 
 ```bash
-python -m pip install matplotlib
 python -m experiments.bfs_dfs_experiment
 ```
 
