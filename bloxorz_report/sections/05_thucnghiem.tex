@@ -8,12 +8,16 @@ bộ 15 màn chơi được lưu dưới dạng JSON. Các thuật toán sử d�
 chung mô hình chuyển trạng thái và cùng quy tắc chi phí
 $1$--$2$--$4$ đã trình bày trong phần mô hình hóa.
 
+Repo Bloxorz AI HCMUS mô tả 12 màn. Đồ án chỉ tham khảo mã nguồn
+và dữ liệu của 10 màn trong repo này, đồng thời bổ sung 5 màn mới,
+tạo thành bộ 15 màn được đánh giá trong báo cáo~\cite{reference-game}.
+
 Script \texttt{experiments/search\_experiment.py} chạy các
 thuật toán, kiểm tra lời giải và xuất kết quả thành CSV cùng
-các biểu đồ so sánh. Bộ dữ liệu thu được gồm 60 dòng kết quả,
-tương ứng với 15 màn chơi và 4 thuật toán~\cite{data}.
+các biểu đồ so sánh. Hai tệp CSV kết quả đi kèm đồ án gồm 60 dòng,
+tương ứng với 15 màn chơi và 4 thuật toán.
 
-Các kết quả được lấy từ hai tệp CSV chi tiết và tổng hợp kèm theo mã nguồn. Dữ liệu chứa số đo của 15 màn và bốn thuật toán; không lưu cấu hình CPU, RAM, hệ điều hành, phiên bản môi trường hay số lượt đo đã sử dụng. Vì vậy, các giá trị thời gian chỉ được diễn giải trong phạm vi bộ kết quả này.
+Báo cáo sử dụng hai tệp CSV chi tiết và tổng hợp kèm theo đồ án. Dữ liệu chứa số đo của 15 màn và bốn thuật toán; không lưu cấu hình CPU, RAM, hệ điều hành, phiên bản môi trường hay số lượt đo đã sử dụng. Vì vậy, các giá trị thời gian chỉ được diễn giải trong phạm vi bộ kết quả này.
 
 Trước khi đo, script chạy khởi động các thuật toán trên bộ test.
 Script lấy trung vị thời gian theo số lượt cấu hình bằng tham số \texttt{--runs}, mặc định là 5.
@@ -308,7 +312,8 @@ giá trị phản ánh tỷ lệ, không phải chênh lệch tuyệt đối.
 \caption{So sánh số nút mở rộng trên từng màn.}\end{figure}
 \begin{figure}[H]\centering
 \includegraphics[width=1.0\linewidth]{figures/time.png}
-\caption{Trung vị thời gian tìm kiếm theo từng màn, đơn vị ms.}\end{figure}
+\caption{Trung vị thời gian tìm kiếm theo từng màn, đơn vị ms.}
+\caption*{Lưu ý: Trung vị thời gian có thể khác nhau giữa các lần đo tùy theo tình trạng hoạt động của máy.}\end{figure}
 \clearpage
 \begin{figure}[H]\centering
 \includegraphics[width=1.0\linewidth]{figures/memory.png}

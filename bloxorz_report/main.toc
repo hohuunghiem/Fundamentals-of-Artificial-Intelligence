@@ -19,23 +19,23 @@
 \contentsline {subsection}{\numberline {3.6}Độ phức tạp và quy ước đo}{9}{subsection.3.6}%
 \contentsline {section}{\numberline {4}Cài đặt và giao diện}{9}{section.4}%
 \contentsline {subsection}{\numberline {4.1}Kiến trúc chương trình}{9}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Luồng sử dụng}{9}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.2}Luồng sử dụng}{10}{subsection.4.2}%
 \contentsline {subsection}{\numberline {4.3}Thực thi nền và giới hạn của STOP}{10}{subsection.4.3}%
-\contentsline {section}{\numberline {5}Thực nghiệm và đánh giá}{11}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Thiết lập thực nghiệm}{11}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Phân nhóm màn chơi}{11}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Chỉ số đánh giá và phương pháp đo}{11}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Kiểm tra tính hợp lệ của lời giải}{12}{subsection.5.4}%
-\contentsline {subsection}{\numberline {5.5}Kết quả trên từng màn chơi}{12}{subsection.5.5}%
-\contentsline {subsection}{\numberline {5.6}Biểu đồ so sánh}{16}{subsection.5.6}%
-\contentsline {subsection}{\numberline {5.7}Phân tích kết quả}{19}{subsection.5.7}%
-\contentsline {subsubsection}{\numberline {5.7.1}Độ dài và tổng chi phí lời giải}{19}{subsubsection.5.7.1}%
-\contentsline {subsubsection}{\numberline {5.7.2}Hiệu quả của heuristic A*}{19}{subsubsection.5.7.2}%
-\contentsline {subsubsection}{\numberline {5.7.3}BFS và UCS khi chi phí không đồng nhất}{20}{subsubsection.5.7.3}%
-\contentsline {subsubsection}{\numberline {5.7.4}Đặc điểm của DFS}{20}{subsubsection.5.7.4}%
-\contentsline {subsubsection}{\numberline {5.7.5}Ảnh hưởng của bản đồ và bộ nhớ}{20}{subsubsection.5.7.5}%
-\contentsline {subsection}{\numberline {5.8}Giới hạn của thực nghiệm}{21}{subsection.5.8}%
-\contentsline {section}{\numberline {6}Kết luận và hướng phát triển}{22}{section.6}%
-\contentsline {section}{Tài liệu tham khảo}{23}{section*.21}%
-\contentsline {section}{\numberline {A}Hướng dẫn chạy chương trình và tái lập thực nghiệm}{23}{appendix.A}%
-\contentsline {section}{\numberline {B}Liên kết mã nguồn và video demo đồ án}{24}{appendix.B}%
+\contentsline {section}{\numberline {5}Thực nghiệm và đánh giá}{12}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Thiết lập thực nghiệm}{12}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Phân nhóm màn chơi}{12}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Chỉ số đánh giá và phương pháp đo}{12}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Kiểm tra tính hợp lệ của lời giải}{13}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Kết quả trên từng màn chơi}{13}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Biểu đồ so sánh}{17}{subsection.5.6}%
+\contentsline {subsection}{\numberline {5.7}Phân tích kết quả}{20}{subsection.5.7}%
+\contentsline {subsubsection}{\numberline {5.7.1}Độ dài và tổng chi phí lời giải}{20}{subsubsection.5.7.1}%
+\contentsline {subsubsection}{\numberline {5.7.2}Hiệu quả của heuristic A*}{20}{subsubsection.5.7.2}%
+\contentsline {subsubsection}{\numberline {5.7.3}BFS và UCS khi chi phí không đồng nhất}{21}{subsubsection.5.7.3}%
+\contentsline {subsubsection}{\numberline {5.7.4}Đặc điểm của DFS}{21}{subsubsection.5.7.4}%
+\contentsline {subsubsection}{\numberline {5.7.5}Ảnh hưởng của bản đồ và bộ nhớ}{21}{subsubsection.5.7.5}%
+\contentsline {subsection}{\numberline {5.8}Giới hạn của thực nghiệm}{22}{subsection.5.8}%
+\contentsline {section}{\numberline {6}Kết luận và hướng phát triển}{23}{section.6}%
+\contentsline {section}{Tài liệu tham khảo}{24}{section*.21}%
+\contentsline {section}{\numberline {A}Hướng dẫn chạy chương trình và tái lập thực nghiệm}{24}{appendix.A}%
+\contentsline {section}{\numberline {B}Liên kết mã nguồn và video demo đồ án}{25}{appendix.B}%
